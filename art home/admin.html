@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login | ART HOME</title>
+  <link rel="stylesheet" href="admin-styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f6f6f6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .admin-container {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      padding: 2.5rem 2rem 2rem 2rem;
+      width: 100%;
+      max-width: 370px;
+      margin: 2rem auto;
+      text-align: center;
+      animation: fadeIn 0.7s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .admin-container h2 {
+      margin-bottom: 1.5rem;
+      color: #222;
+      font-weight: 600;
+    }
+    .admin-container input {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      background: #fafafa;
+      transition: border 0.2s;
+    }
+    .admin-container input:focus {
+      border: 1.5px solid #a3a3ff;
+      outline: none;
+    }
+    .admin-container button {
+      width: 100%;
+      padding: 0.9rem;
+      background: #222;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .admin-container button:hover {
+      background: #444;
+    }
+    #login-error {
+      color: #e74c3c;
+      margin-bottom: 1rem;
+      min-height: 1.2em;
+      font-size: 0.98em;
+    }
+    #admin-panel {
+      display: none;
+      animation: fadeIn 0.7s;
+    }
+    .logout-btn {
+      margin-top: 1.5rem;
+      background: #e74c3c;
+      color: #fff;
+    }
+    .logout-btn:hover {
+      background: #c0392b;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container" id="login-form">
+    <h2>Admin Login</h2>
+    <input type="email" id="email" placeholder="Email" required autocomplete="username">
+    <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
+    <button onclick="login()">Login</button>
+    <div id="login-error"></div>
+  </div>
+
+  <div class="admin-container" id="admin-panel">
+    <h2>Welcome, Admin!</h2>
+    <p>You are now logged in as admin.<br>Here you can manage your projects and content.</p>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+    <!-- يمكنك إضافة لوحة التحكم هنا لاحقًا -->
+  </div>
+
+  <!-- تحميل مكتبة supabase-js@1 إذا لم تكن موجودة مسبقًا -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1"></script>
+  <!-- كود الجافاسكريبت الخاص بلوحة الأدمن بعد تحميل المكتبة -->
+  <script>
+    const SUPABASE_URL = 'https://gyakzsisqddfihaailru.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5YWt6c2lzcWRkZmloYWFpbHJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI1NjA1MjQsImV4cCI6MjA2ODEzNjUyNH0.bPpqiaL4RiI-Rsrmyf94f6v2Hd6kw2xgbDq3_9Lxqk8';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const ADMIN_UID = "fcfc71a2-8519-489d-9f06-fb3207bf41b4";
+
+    async function login() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      document.getElementById('login-error').textContent = '';
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        document.getElementById('login-error').textContent = error.message;
+        return;
+      }
+      checkAdmin();
+    }
+
+    async function checkAdmin() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user && user.id === ADMIN_UID) {
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('admin-panel').style.display = 'block';
+      } else {
+        document.getElementById('login-form').style.display = 'block';
+        document.getElementById('admin-panel').style.display = 'none';
+        if (user) {
+          document.getElementById('login-error').textContent = 'You are not authorized.';
+          await supabase.auth.signOut();
+        }
+      }
+    }
+
+    supabase.auth.onAuthStateChange((event, session) => {
+      checkAdmin();
+    });
+    window.onload = checkAdmin;
+
+    async function logout() {
+      await supabase.auth.signOut();
+      document.getElementById('login-form').style.display = 'block';
+      document.getElementById('admin-panel').style.display = 'none';
+    }
+  </script>
+</body>
+</html> 

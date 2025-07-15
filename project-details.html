@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Details | ART HOME</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+  <style>
+    .project-details-section { padding: 60px 0; }
+    .project-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 10px; }
+    .project-meta { color: #888; margin-bottom: 20px; }
+    .project-description { font-size: 1.1rem; margin-bottom: 30px; }
+    .project-gallery { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 30px; }
+    .project-gallery img, .project-gallery video { max-width: 400px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+    .not-found { text-align: center; color: #c00; font-size: 1.5rem; margin-top: 100px; }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="container">
+      <a href="index.html" class="logo">ART HOME</a>
+      <nav>
+        <a href="index.html#about">About</a>
+        <a href="projects.html" class="active">Projects</a>
+        <a href="index.html#services">Services</a>
+        <a href="index.html#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+  <main class="project-details-section">
+    <div class="container">
+      <div id="project-details"></div>
+    </div>
+  </main>
+  <script>
+    // Static project data
+    const projects = [
+      {
+        id: '1',
+        name: 'Modern Villa',
+        title: 'Modern Villa Interior Design',
+        period: 'Jan 2023 - Apr 2023',
+        description: 'Full interior design for a modern villa, including living room, bedrooms, and outdoor spaces. Focused on minimalism and natural light.',
+        images: [
+          'img/046d495c-4416-431a-8dd5-c3479ad669d2.jpg',
+          'img/15cde9e8-2d01-4b7f-9816-1a429b2d33e1.jpg'
+        ],
+        videos: [
+          'img/1bca3274-8a81-4f01-ba3b-e760eff341ee.mp4'
+        ]
+      },
+      {
+        id: '2',
+        name: 'Luxury Apartment',
+        title: 'Luxury Apartment Renovation',
+        period: 'May 2022 - Sep 2022',
+        description: 'Complete renovation of a luxury apartment, including kitchen, bathrooms, and custom furniture. Emphasis on elegance and comfort.',
+        images: [
+          'img/2c182256-afae-48ff-879f-37604589fac2.jpg',
+          'img/4b394edb-a781-4d6a-b46c-3b63ce535b72.jpg'
+        ],
+        videos: [
+          'img/6945786b-d181-4f55-81b9-6e9a727cce66.mp4'
+        ]
+      }
+    ];
+    // Get project id from URL
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    const project = projects.find(p => p.id === id);
+    const container = document.getElementById('project-details');
+    if (!project) {
+      container.innerHTML = '<div class="not-found">Project not found.</div>';
+    } else {
+      container.innerHTML = `
+        <div class="project-title">${project.title}</div>
+        <div class="project-meta">${project.period}</div>
+        <div class="project-description">${project.description}</div>
+        <div class="project-gallery">
+          ${project.images.map(img => `<img src="${img}" alt="${project.name}">`).join('')}
+          ${project.videos.map(vid => `<video src="${vid}" controls poster="${project.images[0]}"></video>`).join('')}
+        </div>
+        <a href="projects.html" style="color:#222;text-decoration:underline;">&larr; Back to Projects</a>
+      `;
+    }
+  </script>
+</body>
+</html> 
